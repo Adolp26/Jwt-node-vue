@@ -6,8 +6,8 @@ const { Schema } = mongoose;
 
 const userSchema = new Schema(
   {
-    name: { type: String, maxlength: 50, required: true },
-    email: { type: String, maxlength: 30, required: true },
+    name: { type: String, maxlength: 100, required: true },
+    email: { type: String, maxlength: 100, required: true },
     password: { type: String, required: true },
     tokens: [
       {

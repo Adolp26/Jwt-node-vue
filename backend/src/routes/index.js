@@ -5,7 +5,7 @@ const router = express.Router();
 router.get("/api/v1", (req, res) => {
   res.status(200).send({
     success: true,
-    message: "Seja bem-vindo(a) a API Node.js + MongoDB + Azure!",
+    message: "Seja bem-vindo(a) a API Node.js + MongoDB + jwt!",
     version: "1.0.0",
   });
 });
