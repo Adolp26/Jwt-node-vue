@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { jwtDecode as jwt_decode } from 'jwt-decode';
 
-const API_URL = 'http://localhost:3030/api/v1';
+const API_URL = 'http://localhost:8080/api/v1';
 
 const AuthService = {
     login: async (email, password) => {
@@ -11,6 +11,7 @@ const AuthService = {
             localStorage.setItem('token', token);
             return token;
         } catch (error) {
+            console.error('Erro no login:', error.response);
             throw error;
         }
     },
@@ -19,13 +20,14 @@ const AuthService = {
         localStorage.removeItem('token');
     },
 
-    async register(name, email, password) {
+    register: async (name, email, password) => {
         try {
             const response = await axios.post(`${API_URL}/register`, { name, email, password });
             const { token } = response.data;
             localStorage.setItem('token', token);
             return token;
         } catch (error) {
+            console.error('Erro durante o registro:', error.response);
             throw error;
         }
     },
