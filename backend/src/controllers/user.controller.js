@@ -1,47 +1,78 @@
-const User = require("../models/user.model");
+const bcrypt = require('bcrypt');
+const User = require('../models/user.model');
 
-// ==> Usando conceito de Async e Await
-
-// ==> Método responsável por Criar um novo 'User':
 exports.registerNewUser = async (req, res) => {
   try {
-    // => Antes vamos fazer uma verificação se o usuário já possui algum e-mail já cadastrado:
-    const isUser = await User.find({ email: req.body.email });
-    console.log(isUser);
-    if (isUser.length >= 1) {
-      return res
-        .status(409)
-        .json({ message: "Atenção! Este e-mail já possui registro!" });
+    const { name, email, password } = req.body;
+
+    // Validação de dados obrigatórios
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: "Todos os campos são obrigatórios para o registro." });
     }
 
-    const newUser = new User(req.body);
+    // Validação de formato de e-mail
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ error: "O e-mail fornecido não é válido." });
+    }
+
+    // Verificar se o e-mail já está cadastrado
+    const isUser = await User.find({ email });
+    if (isUser.length >= 1) {
+      return res.status(409).json({ error: "Este e-mail já possui registro!" });
+    }
+
+    // Hash da Senha
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Criar novo usuário
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword
+    });
+
+    // Salvar usuário no banco de dados
     const user = await newUser.save();
-    const token = await newUser.generateAuthToken(); // ==> Aqui chamaremos o método que criamos no model
-    return res
-      .status(201)
-      .json({ message: "Usuário(a) criado(a) com sucesso!", user, token });
-  } catch (err) {
-    return res.status(400).json({ err });
+
+    // Gerar Token
+    const token = await newUser.generateAuthToken();
+
+    return res.status(201).json({
+      message: "Usuário(a) criado(a) com sucesso!",
+      user,
+      token
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro durante o registro. Por favor, tente novamente." });
   }
 };
 
-// ==> Método responsável por realizar um novo login 'User':
 exports.loginUser = async (req, res) => {
   try {
-    const { email } = req.body;
-    const { password } = req.body;
+    const { email, password } = req.body;
+
+    // Validação de E-mail
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ error: "O e-mail fornecido não é válido." });
+    }
+
     const user = await User.findByCredentials(email, password);
     if (!user) {
       return res.status(401).json({
-        error: "Erro ao Logar! Verifique as suas credenciais de autenticação!",
+        error: "Erro ao fazer login! Verifique suas credenciais de autenticação.",
       });
     }
+
     const token = await user.generateAuthToken();
-    return res
-      .status(201)
-      .json({ message: "Usuário(a) logado com sucesso!", user, token });
-  } catch (err) {
-    return res.status(400).json({ err });
+    return res.status(200).json({
+      message: "Usuário(a) logado(a) com sucesso!",
+      user,
+      token
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro durante o login. Por favor, tente novamente." });
   }
 };
 
