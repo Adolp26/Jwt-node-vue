@@ -1,4 +1,5 @@
 // Register.js
+import './register.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Services/AuthContext';
@@ -63,3 +64,4 @@ function Register() {
 }
 
 export default Register;
+

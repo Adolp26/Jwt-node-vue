@@ -17,9 +17,9 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const register = async (email, password) => {
+    const register = async (name, email, password) => {
         try {
-            const token = await AuthService.register(email, password);
+            const token = await AuthService.register(name, email, password);
             setUser(AuthService.getCurrentUser());
             return token;
         } catch (error) {

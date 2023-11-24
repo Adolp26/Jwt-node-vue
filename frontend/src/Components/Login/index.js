@@ -12,7 +12,7 @@ function Login() {
         e.preventDefault();
         try {
             await login(email, password);
-            navigate('/dashboard'); // Redirecionar para a página após o login
+            navigate('/annotations'); // Redirecionar para a página após o login
         } catch (error) {
             console.error('Erro durante o login:', error);
         }
