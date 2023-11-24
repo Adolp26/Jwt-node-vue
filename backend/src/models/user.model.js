@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const { Schema } = mongoose;
@@ -45,14 +45,22 @@ userSchema.methods.generateAuthToken = async function () {
 // ==> Esse método irá fazer uma pesquisa por um 'user' por 'email' e 'password'
 userSchema.statics.findByCredentials = async (email, password) => {
   const user = await User.findOne({ email });
-  console.log(user);
+  console.log("Usuário Encontrado:");
+
   if (!user) {
-    throw new Error({ error: "Login inválido!" });
+    console.error("Usuário não encontrado!");
+    throw new Error("Usuário não encontrado!");
   }
-  const isPasswordMatch = await bcrypt.compare(password, user.password);
+  console.log("Senha fornecida:", password);
+  console.log("Senha armazenada:", user.password);
+
+  const isPasswordMatch = bcrypt.compare(password, user.password);
+
   if (!isPasswordMatch) {
-    throw new Error({ error: "Login inválido!" });
+    console.error("Senha incorreta!");
+    throw new Error("Senha incorreta!");
   }
+
   return user;
 };
 

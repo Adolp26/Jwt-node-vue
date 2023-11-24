@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const validator = require('validator');
 const User = require('../models/user.model');
 
 exports.registerNewUser = async (req, res) => {
@@ -23,6 +24,7 @@ exports.registerNewUser = async (req, res) => {
 
     // Hash da Senha
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.log('Senha Hashada:', hashedPassword);
 
     // Criar novo usuário
     const newUser = new User({
@@ -72,11 +74,28 @@ exports.loginUser = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+
+    if (error.message === "Senha incorreta!") {
+      return res.status(401).json({ error: "Senha incorreta. Tente novamente." });
+    }
+
     return res.status(500).json({ error: "Erro durante o login. Por favor, tente novamente." });
   }
 };
 
 // ==> Método responsável por retornar um determinado 'User'
 exports.returnUserProfile = async (req, res) => {
-  await res.json(req.userData);
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ error: "Usuário não encontrado." });
+    }
+
+    return res.json(user);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao buscar o perfil do usuário. Por favor, tente novamente." });
+  }
 };
