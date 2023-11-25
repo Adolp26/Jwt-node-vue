@@ -1,8 +1,9 @@
 // Register.js
-import './register.css';
+import styles from './register.module.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Services/AuthContext';
+ 
 
 function Register() {
     const navigate = useNavigate();
@@ -41,23 +42,40 @@ function Register() {
     };
 
     return (
-        <div>
-            <h2>Registro</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+        <div className={styles['register-container']}>
+            <h2 className={styles['register-title']}>Registro</h2>
+            {error && <p className={styles['register-error']}>{error}</p>}
             <form onSubmit={handleRegister}>
-                <label>
+                <label className={styles['register-label']}>
                     Nome:
-                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className={styles['register-input']}
+                    />
                 </label>
-                <label>
+                <label className={styles['register-label']}>
                     Email:
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className={styles['register-input']}
+                    />
                 </label>
-                <label>
+                <label className={styles['register-label']}>
                     Senha:
-                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className={styles['register-input']}
+                    />
                 </label>
-                <button type="submit">Registrar</button>
+                <button type="submit" className={styles['register-button']}>
+                    Registrar
+                </button>
             </form>
         </div>
     );

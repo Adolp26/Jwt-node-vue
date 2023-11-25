@@ -1,7 +1,5 @@
-/* Adicione este estilo em um arquivo CSS separado e importe-o no seu componente Register.js */
-
 /* Estilo para o contêiner principal */
-div {
+.register-container {
     max-width: 400px;
     margin: 0 auto;
     padding: 20px;
@@ -12,32 +10,32 @@ div {
     transition: box-shadow 0.3s ease;
 }
 
-div:hover {
+.register-container:hover {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 }
 
 /* Estilo para o título */
-h2 {
+.register-title {
     text-align: center;
     color: #333;
     margin-bottom: 20px;
 }
 
 /* Estilo para mensagens de erro */
-p {
+.register-error {
     color: #e74c3c;
     margin-bottom: 10px;
 }
 
 /* Estilo para os rótulos */
-label {
+.register-label {
     display: block;
     margin-bottom: 8px;
     color: #555;
 }
 
 /* Estilo para os campos de entrada */
-input {
+.register-input {
     width: 100%;
     padding: 10px;
     margin-bottom: 12px;
@@ -47,12 +45,12 @@ input {
     transition: border-color 0.3s ease;
 }
 
-input:focus {
+.register-input:focus {
     border-color: #3498db;
 }
 
 /* Estilo para o botão de registro */
-button {
+.register-button {
     width: 100%;
     padding: 12px;
     background-color: #2ecc71;
@@ -63,6 +61,6 @@ button {
     transition: background-color 0.3s ease;
 }
 
-button:hover {
+.register-button:hover {
     background-color: #27ae60;
 }
