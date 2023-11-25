@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const User = require('./user.model');
 
 const AnnotationDataSchema = new mongoose.Schema({
     title: String,
@@ -6,7 +7,7 @@ const AnnotationDataSchema = new mongoose.Schema({
     priority: Boolean,
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: User,
         required: true
     }
 });

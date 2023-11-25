@@ -6,7 +6,9 @@ async function auth(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
-    if (token == null) return res.sendStatus(401);
+    if (!token) {
+      return res.sendStatus(401); 
+    }
 
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
@@ -16,8 +18,8 @@ async function auth(req, res, next) {
 
     next();
   } catch (error) {
-    console.error(error);
-    return res.sendStatus(403);
+    console.error(error.name);
+    return res.sendStatus(401);
   }
 }
 

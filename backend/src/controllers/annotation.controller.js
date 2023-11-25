@@ -24,14 +24,19 @@ module.exports = {
             });
         }
 
-        const annotationsCreated = await Annotations.create({
-            title,
-            notes,
-            priority,
-            user: req.user._id,
-        });
+        try {
+            const annotationsCreated = await Annotations.create({
+                title,
+                notes,
+                priority,
+                user: req.user._id,
+            });
 
-        return res.json(annotationsCreated);
+            return res.json(annotationsCreated);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Erro ao criar anotação.' });
+        }
     },
 
 

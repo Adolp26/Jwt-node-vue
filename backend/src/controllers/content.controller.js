@@ -12,7 +12,7 @@ module.exports = {
                 return res.status(404).json({ error: "Anotação não encontrada" });
             }
 
-            if (notes) {
+            if (notes != undefined) {
                 annotation.notes = notes;
                 await annotation.save();
             }
