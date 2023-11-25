@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import './Styles/global.css'
-import './Styles/sidebar.css'
-import './Styles/app.css'
-import './Styles/main.css'
-import Notes from './Components/Notes'
-import './Styles/Form.css'
-import api from './services/api'
-import RadioButton from "./Components/RadioButton";
+import '../Styles/global.css'
+import '../Styles/sidebar.css'
+import '../Styles/app.css'
+import '../Styles/main.css'
+import Notes from '../Components/Notes'
+import '../Styles/Form.css'
+import api from '../Services/api'
+import RadioButton from "../Components/RadioButton";
 
 
 function App() {
