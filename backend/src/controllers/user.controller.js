@@ -24,7 +24,7 @@ exports.registerNewUser = async (req, res) => {
 
     // Hash da Senha
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log('Senha Hashada:', hashedPassword);
+    
 
     // Criar novo usuário
     const newUser = new User({
@@ -82,6 +82,24 @@ exports.loginUser = async (req, res) => {
     return res.status(500).json({ error: "Erro durante o login. Por favor, tente novamente." });
   }
 };
+
+
+exports.logoutUser = async (req, res) => {
+  try {
+    // Remova o token atual da lista de tokens do usuário
+    req.user.tokens = req.user.tokens.filter((token) => token.token !== req.token);
+
+    // Salve as alterações no banco de dados
+    await req.user.save();
+
+    return res.status(200).json({ message: 'Logout realizado com sucesso.' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Erro durante o logout. Por favor, tente novamente.' });
+  }
+};
+
+
 
 // ==> Método responsável por retornar um determinado 'User'
 exports.returnUserProfile = async (req, res) => {

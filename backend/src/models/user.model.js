@@ -45,19 +45,16 @@ userSchema.methods.generateAuthToken = async function () {
 // ==> Esse método irá fazer uma pesquisa por um 'user' por 'email' e 'password'
 userSchema.statics.findByCredentials = async (email, password) => {
   const user = await User.findOne({ email });
-  console.log("Usuário Encontrado:");
+
 
   if (!user) {
-    console.error("Usuário não encontrado!");
     throw new Error("Usuário não encontrado!");
   }
-  console.log("Senha fornecida:", password);
-  console.log("Senha armazenada:", user.password);
+
 
   const isPasswordMatch = bcrypt.compare(password, user.password);
 
   if (!isPasswordMatch) {
-    console.error("Senha incorreta!");
     throw new Error("Senha incorreta!");
   }
 
