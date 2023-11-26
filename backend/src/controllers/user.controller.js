@@ -86,9 +86,13 @@ exports.loginUser = async (req, res) => {
 
 exports.logoutUser = async (req, res) => {
   try {
-    // Remova o token atual da lista de tokens do usuário
+    // Remove o token atual da lista de tokens do usuário
+    const originalTokens = [...req.user.tokens];
     req.user.tokens = req.user.tokens.filter((token) => token.token !== req.token);
 
+    console.log('Tokens antes da remoção:', originalTokens);
+    console.log('Token removido:', req.token);
+    console.log('Novos tokens:', req.user.tokens);
     // Salve as alterações no banco de dados
     await req.user.save();
 
