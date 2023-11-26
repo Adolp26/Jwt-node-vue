@@ -1,114 +1,108 @@
-import React, { useEffect, useState } from "react";
-import '../Styles/global.css'
-import '../Styles/sidebar.css'
-import '../Styles/app.css'
-import '../Styles/main.css'
-import Notes from '../Components/Notes'
-import '../Styles/Form.css'
-import api from '../Services/api'
-import RadioButton from "../Components/RadioButton";
+// App.js
+import React, { useEffect, useState } from 'react';
+import '../Styles/global.css';
+import '../Styles/sidebar.css';
+import '../Styles/app.css';
+import '../Styles/main.css';
+import Notes from '../Components/Notes';
+import '../Styles/Form.css';
+import RadioButton from '../Components/RadioButton';
+import { getAllAnnotations, createAnnotation, deleteAnnotation, updatePriority, updateAnnotation, getAnnotationsByPriority } from '../Services/AnnotationsService';
+import AuthService from '../Services/AuthService';
 
 
 function App() {
-
-
-  const [title, setTitles] = useState('')
-  const [notes, setNotes] = useState('')
+  const [title, setTitles] = useState('');
+  const [notes, setNotes] = useState('');
   const [allNotes, setAllNotes] = useState([]);
-  const [selectedValue, setSelectedValue] = useState('all')
+  const [selectedValue, setSelectedValue] = useState('all');
 
+  useEffect(() => {
+    getAllAnnotations().then((data) => {
+      setAllNotes(data);
+    });
+  }, []);
 
-  /*Criação de anotações */
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const response = await api.post('/annotations', {
-      title,
-      notes,
-      priority: false
-    })
+    try {
+      const response = await createAnnotation(title, notes, false);
 
-    setTitles('');
-    setNotes('');
+      setTitles('');
+      setNotes('');
 
-    if (selectedValue !== 'all') {
-      getAllNotes();
-    } else {
-      setAllNotes([...allNotes, response.data]);
-    }
-    setSelectedValue('all')
-  }
-
-  /*Alteração da cor do botão Salvar conforme preenchimento dos campos */
-  useEffect(() => {
-    function enableSubmitButton() {
-      let btn = document.getElementById('btn_submit')
-      btn.style.background = '#ffd3ca'
-      if (title && notes) {
-        btn.style.background = "#eb8f7a"
+      if (selectedValue !== 'all') {
+        loadNotes(selectedValue);
+      } else {
+        setAllNotes([...allNotes, response]);
       }
+      setSelectedValue('all');
+    } catch (error) {
+      console.error('Erro ao criar anotação:', error);
     }
-    enableSubmitButton()
-  }, [title, notes])
-
-
-
-
-  useEffect(() => {
-
-    getAllNotes();
-
-  }, [])
-
-  /* Listar todos as anotações*/
-  async function getAllNotes() {
-    const response = await api.get('/annotations');
-    setAllNotes(response.data)
-
   }
 
-  /* Mostrar anotações por radiobuttons*/
+  async function handleDelete(id) {
+    try {
+      await deleteAnnotation(id);
+      setAllNotes(allNotes.filter((note) => note._id !== id));
+    } catch (error) {
+      console.error('Erro ao deletar anotação:', error);
+
+    }
+  }
+
+  // Função para carregar as anotações com base na prioridade
   async function loadNotes(options) {
-    const params = { priority: options };
-    const response = await api.get('/priorities', { params });
-
-    if (response) {
-      setAllNotes(response.data);
+    try {
+      if (options !== 'all') {
+        // Chame a função da API para obter anotações com base na prioridade
+        const response = await getAnnotationsByPriority(options);
+        setAllNotes(response);
+      } else {
+        // Se options for 'all', carregue todas as anotações
+        getAllAnnotations().then((data) => {
+          setAllNotes(data);
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao carregar anotações com base na prioridade:', error);
     }
   }
 
-  /*Verificando valor da prioridade  */
+  // Função para lidar com a mudança no RadioButton
   async function handleChange(e) {
     setSelectedValue(e.value);
 
     if (e.checked && e.value !== 'all') {
       loadNotes(e.value);
     } else {
-      getAllNotes();
+      getAllAnnotations().then((data) => {
+        setAllNotes(data);
+      });
     }
-  }
-
-
-
-  /*Deletando Cards*/
-  async function handleDelete(id) {
-    const deleteNote = await api.delete(`/annotations/${id}`)
-
-    /* Retornar Cards com base no id após deletar */
-    if (deleteNote) {
-      setAllNotes(allNotes.filter(note => note._id !== id));
-    }
-
   }
 
   async function handleChangePriority(id) {
-    const note = await api.put(`/priorities/${id}`)
+    await updatePriority(id);
 
-
-    if (note && selectedValue !== 'all') {
+    if (notes && selectedValue !== 'all') {
+      await updatePriority(id);
       loadNotes(selectedValue);
-    } else if (note) {
-      getAllNotes();
+    } else if (notes) {
+      getAllAnnotations();
+      console.log('Erro ao atualizar a prioridade:');
+    }
+  }
+
+
+  async function handleLogout() {
+    try {
+      await AuthService.logout();
+      window.location('/login');
+    } catch (error) {
+      console.error('Erro durante o logout:', error);
     }
   }
 
@@ -136,6 +130,7 @@ function App() {
           selectedValue={selectedValue}
           handleChange={handleChange}
         />
+        <button onClick={handleLogout}>Logout</button>
       </aside>
 
       <main>

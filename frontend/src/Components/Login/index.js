@@ -9,6 +9,7 @@ function Login() {
     const { login } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -17,6 +18,7 @@ function Login() {
             navigate('/annotations'); // Redirecionar para a página após o login
         } catch (error) {
             console.error('Erro durante o login:', error);
+            setError('Email ou senha incorretos');
         }
     };
 
@@ -24,6 +26,7 @@ function Login() {
         <div className={styles['position-container']}>
             <div className={styles['login-container']}>
                 <h2 className={styles['login-title']}>Login</h2>
+                {error && <p className={styles['error-message']}>{error}</p>}
                 <form onSubmit={handleLogin}>
                     <label>
                         Email:

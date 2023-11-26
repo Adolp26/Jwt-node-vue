@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import './styles.css'
 import './style-priority.css'
 import { AiTwotoneDelete, AiTwotoneExclamationCircle } from "react-icons/ai";
-import api from '../../Services/api'
+import {api} from '../../Services/AnnotationsService'
 
 
 function Notes({ data, handleDelete, handleChangePriority }) {

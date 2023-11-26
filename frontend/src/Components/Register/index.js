@@ -1,9 +1,9 @@
 // Register.js
+
 import styles from './register.module.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Services/AuthContext';
- 
 
 function Register() {
     const navigate = useNavigate();
@@ -77,9 +77,11 @@ function Register() {
                     Registrar
                 </button>
             </form>
+            <button onClick={() => navigate('/login')} className={styles['register-login-button']}>
+                Já tem registro, clique aqui
+            </button>
         </div>
     );
 }
 
 export default Register;
-
