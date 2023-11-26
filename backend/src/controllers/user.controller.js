@@ -1,6 +1,7 @@
-const bcrypt = require('bcrypt');
 const validator = require('validator');
 const User = require('../models/user.model');
+const bcrypt = require('bcryptjs');
+require('dotenv').config();
 
 exports.registerNewUser = async (req, res) => {
   try {
@@ -17,32 +18,28 @@ exports.registerNewUser = async (req, res) => {
     }
 
     // Verificar se o e-mail já está cadastrado
-    const isUser = await User.find({ email });
-    if (isUser.length >= 1) {
+    const isUser = await User.findOne({ email });
+    if (isUser) {
       return res.status(409).json({ error: "Este e-mail já possui registro!" });
     }
-
-    // Hash da Senha
-    const hashedPassword = await bcrypt.hash(password, 10);
-
 
     // Criar novo usuário
     const newUser = new User({
       name,
       email,
-      password: hashedPassword
+      password,
     });
 
     // Salvar usuário no banco de dados
-    const user = await newUser.save();
+    await newUser.save();
 
     // Gerar Token
-    const token = await newUser.generateAuthToken();
+    const token = newUser.generateAuthToken();
 
     return res.status(201).json({
       message: "Usuário(a) criado(a) com sucesso!",
-      user,
-      token
+      user: newUser,
+      token,
     });
   } catch (error) {
     console.error(error);
@@ -55,18 +52,33 @@ exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     // Validação de E-mail
-    if (!validator.isEmail(email)) {
-      return res.status(400).json({ error: "O e-mail fornecido não é válido." });
+    if (!password || !validator.isEmail(email)) {
+      return res.status(400).json({ error: "E-mail e senha são obrigatórios." });
     }
 
-    const user = await User.findByCredentials(email, password);
+    // Encontrar usuário
+    const user = await User.findOne({ email });
+
     if (!user) {
       return res.status(401).json({
         error: "Erro ao fazer login! Verifique suas credenciais de autenticação.",
       });
     }
 
+    // Comparar Senhas
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    console.log('Senha fornecida:', password);
+    console.log('Senha do banco:', user.password);
+    console.log(isPasswordMatch);
+
+    if (!isPasswordMatch) {
+      return res.status(401).json({ error: "Senha incorreta. Tente novamente." });
+    }
+
+    // Gerar Token
     const token = await user.generateAuthToken();
+    console.log('Token gerado:', token);
+
     return res.status(200).json({
       message: "Usuário(a) logado(a) com sucesso!",
       user,
@@ -75,10 +87,6 @@ exports.loginUser = async (req, res) => {
   } catch (error) {
     console.error(error);
 
-    if (error.message === "Senha incorreta!") {
-      return res.status(401).json({ error: "Senha incorreta. Tente novamente." });
-    }
-
     return res.status(500).json({ error: "Erro durante o login. Por favor, tente novamente." });
   }
 };
@@ -86,15 +94,17 @@ exports.loginUser = async (req, res) => {
 
 exports.logoutUser = async (req, res) => {
   try {
+    console.log('Antes de remover o token:', req.user.tokens);
+
     // Remove o token atual da lista de tokens do usuário
-    const originalTokens = [...req.user.tokens];
     req.user.tokens = req.user.tokens.filter((token) => token.token !== req.token);
 
-    console.log('Tokens antes da remoção:', originalTokens);
-    console.log('Token removido:', req.token);
-    console.log('Novos tokens:', req.user.tokens);
+    console.log('Depois de remover o token:', req.user.tokens);
+
     // Salve as alterações no banco de dados
     await req.user.save();
+
+    console.log('Usuário salvo após o logout:', req.user);
 
     return res.status(200).json({ message: 'Logout realizado com sucesso.' });
   } catch (error) {
@@ -105,7 +115,6 @@ exports.logoutUser = async (req, res) => {
 
 
 
-// ==> Método responsável por retornar um determinado 'User'
 exports.returnUserProfile = async (req, res) => {
   try {
     const { id } = req.params;
