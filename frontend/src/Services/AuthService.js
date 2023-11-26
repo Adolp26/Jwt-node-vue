@@ -13,8 +13,8 @@ const AuthService = {
 
             const userId = decodedToken._id; // Utilizando o _id como userId
 
-            localStorage.setItem('token', token);
-            localStorage.setItem('userId', userId);
+            sessionStorage.setItem('token', token);
+            sessionStorage.setItem('userId', userId);
             console.log(userId)
             console.log(token)
 
@@ -27,8 +27,18 @@ const AuthService = {
 
     logout: async () => {
         try {
-            await axios.post(`${API_URL}/logout`);
-            localStorage.removeItem('token');
+            const token = sessionStorage.getItem('token');
+
+            if (!token) {
+                console.error('Token não encontrado no armazenamento local');
+                return;
+            }
+            await axios.post(`${API_URL}/logout`, null, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            sessionStorage.removeItem('token');
         } catch (error) {
             console.error('Erro durante o logout:', error.response.data.error || 'Erro desconhecido');
             throw error.response.data;
@@ -39,7 +49,7 @@ const AuthService = {
         try {
             const response = await axios.post(`${API_URL}/register`, { name, email, password });
             const { token } = response.data;
-            localStorage.setItem('token', token);
+            sessionStorage.setItem('token', token);
             return token;
         } catch (error) {
             console.error('Erro durante o registro:', error.response.data.error || 'Erro desconhecido');
@@ -48,7 +58,7 @@ const AuthService = {
     },
 
     getCurrentUser: () => {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         if (token) {
             try {
                 const decodedToken = jwt_decode(token);

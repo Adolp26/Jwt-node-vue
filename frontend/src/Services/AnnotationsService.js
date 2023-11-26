@@ -1,8 +1,9 @@
 import axios from "axios";
 
+
 // Obtendo o token e o userId do armazenamento local
-const token = localStorage.getItem('token');
-const userId = localStorage.getItem('userId'); // Certifique-se de armazenar o userId durante o login
+const token = sessionStorage.getItem('token');
+const userId = sessionStorage.getItem('userId'); // Certifique-se de armazenar o userId durante o login
 
 export const api = axios.create({
     baseURL: 'http://localhost:8080/api/v1',
@@ -18,6 +19,10 @@ export const getAllAnnotations = async () => {
         return response.data;
     } catch (error) {
         console.error('Erro ao buscar as anotações:', error);
+        // Se o erro for de autenticação, redirecione para a página de login
+        if (error.response && error.response.status === 401) {
+            window.location.assign('/login');
+        }
         throw error;
     }
 };
@@ -49,7 +54,7 @@ export const deleteAnnotation = async (id) => {
 
 export const updateAnnotation = async (id, title, notes, priority) => {
     try {
-        const response = await api.put(`/contents/${id}`, {
+        const response = await api.put(`/contents/${id}/${userId}`, {
             title,
             notes,
             priority,
@@ -80,3 +85,5 @@ export const updatePriority = async (id) => {
         throw error;
     }
 };
+
+

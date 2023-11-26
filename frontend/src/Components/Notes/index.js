@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import './styles.css'
 import './style-priority.css'
 import { AiTwotoneDelete, AiTwotoneExclamationCircle } from "react-icons/ai";
-import {api} from '../../Services/AnnotationsService'
+import { api } from '../../Services/AnnotationsService'
+
 
 
 function Notes({ data, handleDelete, handleChangePriority }) {
-
+    const userId = sessionStorage.getItem('userId');
     const [changedNote, setChangedNote] = useState('');
 
     function handleEdit(e, priority) {
@@ -25,7 +26,7 @@ function Notes({ data, handleDelete, handleChangePriority }) {
         e.style.boxShadow = 'none'
 
         if (changedNote && changedNote !== notes) {
-            await api.put(`/contents/${data._id}`, {
+            await api.put(`/contents/${data._id}/${userId}`, {
                 notes: changedNote,
             })
         }

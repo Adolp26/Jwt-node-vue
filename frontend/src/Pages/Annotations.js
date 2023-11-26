@@ -7,11 +7,12 @@ import '../Styles/main.css';
 import Notes from '../Components/Notes';
 import '../Styles/Form.css';
 import RadioButton from '../Components/RadioButton';
-import { getAllAnnotations, createAnnotation, deleteAnnotation, updatePriority, updateAnnotation, getAnnotationsByPriority } from '../Services/AnnotationsService';
+import { getAllAnnotations, createAnnotation, deleteAnnotation, updatePriority, getAnnotationsByPriority } from '../Services/AnnotationsService';
 import AuthService from '../Services/AuthService';
-
+import { useNavigate } from 'react-router-dom';
 
 function App() {
+  const navigate = useNavigate();
   const [title, setTitles] = useState('');
   const [notes, setNotes] = useState('');
   const [allNotes, setAllNotes] = useState([]);
@@ -96,11 +97,13 @@ function App() {
     }
   }
 
-
+  //Responsável por fazer o logout do usuário e redirecioná-lo para a página de login
   async function handleLogout() {
+
     try {
       await AuthService.logout();
-      window.location('/login');
+      sessionStorage.clear(); // Limpar completamente o sessionStorage
+      navigate('/login'); // Redirecionar para a página de login após o logout
     } catch (error) {
       console.error('Erro durante o logout:', error);
     }
