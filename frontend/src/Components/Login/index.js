@@ -14,11 +14,15 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            await login(email, password);
-            navigate('/annotations'); // Redirecionar para a página após o login
+            const success = await login(email, password);
+            if (success) {
+                navigate('/annotations'); // Redirecionar para a página após o login
+            } else {
+                setError('Email ou senha incorretos');
+            }
         } catch (error) {
             console.error('Erro durante o login:', error);
-            setError('Email ou senha incorretos');
+            setError('Ocorreu um erro durante o login');
         }
     };
 
@@ -50,6 +54,9 @@ function Login() {
                         Login
                     </button>
                 </form>
+                <button onClick={() => navigate('/register')} className={styles['login-register-button']}>
+                    Não é cadastrado? clique aqui
+                </button>
             </div>
         </div>
     );

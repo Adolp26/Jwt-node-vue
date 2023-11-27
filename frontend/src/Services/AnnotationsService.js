@@ -1,4 +1,5 @@
 import axios from "axios";
+import AuthService from "./AuthService";
 
 
 // Obtendo o token e o userId do armazenamento local
@@ -14,6 +15,7 @@ export const api = axios.create({
 });
 
 export const getAllAnnotations = async () => {
+    
     try {
         const response = await api.get(`/annotations/${userId}`);
         return response.data;
@@ -21,7 +23,7 @@ export const getAllAnnotations = async () => {
         console.error('Erro ao buscar as anotações:', error);
         // Se o erro for de autenticação, redirecione para a página de login
         if (error.response && error.response.status === 401) {
-            window.location.assign('/login');
+             window.location.assign('/login');
         }
         throw error;
     }

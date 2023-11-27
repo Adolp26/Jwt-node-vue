@@ -7,6 +7,10 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api/v1';
 const AuthService = {
     login: async (email, password) => {
         try {
+            // Remova o token e userId antigos
+            // sessionStorage.removeItem('token');
+            // sessionStorage.removeItem('userId');
+
             const response = await axios.post(`${API_URL}/login`, { email, password });
             const { token } = response.data;
             const decodedToken = jwt_decode(token);
@@ -15,10 +19,11 @@ const AuthService = {
 
             sessionStorage.setItem('token', token);
             sessionStorage.setItem('userId', userId);
-            console.log(userId)
-            console.log(token)
+            console.log('Login bem-sucedido');
+            console.log('userId:', userId);
+            console.log('token:', token);
 
-            return token;
+            return Promise.resolve(token);
         } catch (error) {
             console.error('Erro no login:', error.response.data.error || 'Erro desconhecido');
             throw error.response.data;
@@ -28,22 +33,28 @@ const AuthService = {
     logout: async () => {
         try {
             const token = sessionStorage.getItem('token');
+            console.log('Token no frontend:', token);
 
             if (!token) {
                 console.error('Token não encontrado no armazenamento local');
                 return;
             }
+
             await axios.post(`${API_URL}/logout`, null, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            sessionStorage.removeItem('token');
+
+            sessionStorage.clear();
+            console.log('Token e userId removidos com sucesso');
         } catch (error) {
-            console.error('Erro durante o logout:', error.response.data.error || 'Erro desconhecido');
-            throw error.response.data;
+            console.error('Erro durante o logout:', error.response?.data?.error || 'Erro desconhecido');
+            throw error.response?.data;
         }
     },
+
+
 
     register: async (name, email, password) => {
         try {

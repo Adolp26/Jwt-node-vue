@@ -25,61 +25,73 @@ function Register() {
                 return;
             }
 
-            // Chamar a função de registro
-            await register(name, email, password);
+            // Verificar se a senha atende aos critérios
+            if (password.length < 6) {
+                setError('A senha deve ter pelo menos 6 caracteres');
+                return;
+            }
 
-            console.log('Registro realizado com sucesso!');
-            navigate('/login');
+            // Chamar a função de registro
+            const response = await register(name, email, password);
+
+            if (response.error) {
+                setError(response.error);
+            } else {
+                console.log('Registro realizado com sucesso!');
+                navigate('/login');
+            }
         } catch (error) {
             console.error('Erro durante o registro:', error);
 
             if (error.response && error.response.data && error.response.data.error) {
                 setError(error.response.data.error);
             } else {
-                setError('Erro durante o registro. Por favor, tente novamente.');
+                setError('Email já cadastrado. Por favor, tente novamente com um email diferente');
             }
         }
     };
 
     return (
-        <div className={styles['register-container']}>
-            <h2 className={styles['register-title']}>Registro</h2>
-            {error && <p className={styles['register-error']}>{error}</p>}
-            <form onSubmit={handleRegister}>
-                <label className={styles['register-label']}>
-                    Nome:
-                    <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className={styles['register-input']}
-                    />
-                </label>
-                <label className={styles['register-label']}>
-                    Email:
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className={styles['register-input']}
-                    />
-                </label>
-                <label className={styles['register-label']}>
-                    Senha:
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className={styles['register-input']}
-                    />
-                </label>
-                <button type="submit" className={styles['register-button']}>
-                    Registrar
+        <div className={styles['position-container']}>
+            <div className={styles['register-container']}>
+                <h2 className={styles['register-title']}>Cadastre-se</h2>
+                {error && <p className={styles['register-error']}>{error}</p>}
+                <form onSubmit={handleRegister}>
+                    <label className={styles['register-label']}>
+                        Nome:
+                        <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className={styles['register-input']}
+                        />
+                    </label>
+                    <label className={styles['register-label']}>
+                        Email:
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className={styles['register-input']}
+                        />
+                    </label>
+                    <label className={styles['register-label']}>
+                        Senha:
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className={styles['register-input']}
+                        />
+                    </label>
+                    <button type="submit" className={styles['register-button']}>
+                        Registrar
+                    </button>
+                </form>
+                <button onClick={() => navigate('/login')} className={styles['register-login-button']}>
+                    Já é cadastrado? clique aqui
                 </button>
-            </form>
-            <button onClick={() => navigate('/login')} className={styles['register-login-button']}>
-                Já tem registro, clique aqui
-            </button>
+            </div>
         </div>
     );
 }
