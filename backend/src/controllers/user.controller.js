@@ -30,11 +30,12 @@ exports.registerNewUser = async (req, res) => {
       password,
     });
 
+    // Gerar Token
+    const token = newUser.generateAuthToken();
+
     // Salvar usuário no banco de dados
     await newUser.save();
 
-    // Gerar Token
-    const token = newUser.generateAuthToken();
 
     return res.status(201).json({
       message: "Usuário(a) criado(a) com sucesso!",
@@ -79,6 +80,9 @@ exports.loginUser = async (req, res) => {
     const token = await user.generateAuthToken();
     console.log('Token gerado:', token);
 
+    // Salvar usuário no banco de dados
+    await user.save();
+
     return res.status(200).json({
       message: "Usuário(a) logado(a) com sucesso!",
       user,
@@ -97,12 +101,23 @@ exports.logoutUser = async (req, res) => {
     console.log('Antes de remover o token:', req.user.tokens);
 
     // Remove o token atual da lista de tokens do usuário
+    const tokenToRemove = req.token;
+    const userTokens = req.user.tokens;
+
+    if (!tokenToRemove || !userTokens.some(token => token.token === tokenToRemove)) {
+      return res.status(401).json({ error: 'Token inválido ou não encontrado.' });
+    }
     req.user.tokens = req.user.tokens.filter((token) => token.token !== req.token);
 
     console.log('Depois de remover o token:', req.user.tokens);
 
     // Salve as alterações no banco de dados
     await req.user.save();
+    const savedUser = await User.findById(req.user._id);
+
+    if (!savedUser) {
+      return res.status(500).json({ error: 'Erro ao salvar as alterações do usuário.' });
+    }
 
     console.log('Usuário salvo após o logout:', req.user);
 
