@@ -3,7 +3,7 @@ const Annotations = require('../models/annotation.model');
 module.exports = {
     async update(req, res) {
         try {
-            const userId = req.params.userId;  // Pegue o userId da solicitação
+            const userId = req.params.userId;
             const { id } = req.params;
 
             const annotation = await Annotations.findById(id);
@@ -16,9 +16,14 @@ module.exports = {
             if (annotation.user.toString() !== userId) {
                 return res.status(403).json({ error: "Você não tem permissão para atualizar esta anotação" });
             }
-            await annotation.save();
 
-            return res.json(annotation);
+            // Atualiza os campos da anotação com os dados fornecidos no corpo da requisição
+            annotation.notes = req.body.notes || annotation.notes;
+
+            // Salva a anotação atualizada
+            const updatedAnnotation = await annotation.save();
+
+            return res.json(updatedAnnotation);
         } catch (error) {
             console.error(error);
             return res.status(500).json({ error: "Erro interno do servidor" });
