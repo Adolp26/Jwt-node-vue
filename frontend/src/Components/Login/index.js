@@ -16,7 +16,9 @@ function Login() {
         try {
             const success = await login(email, password);
             if (success) {
-                navigate('/annotations'); // Redirecionar para a página após o login
+                setTimeout(() => {
+                    navigate('/annotations'); // Redirecionar para a página após o login
+                }, 1000); // Aguardar 2 segundos antes de redirecionar
             } else {
                 setError('Email ou senha incorretos');
             }
