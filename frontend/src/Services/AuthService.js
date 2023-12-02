@@ -20,9 +20,6 @@ const AuthService = {
             sessionStorage.setItem('token', token);
             sessionStorage.setItem('userId', userId);
             console.log('Login bem-sucedido');
-            console.log('userId:', userId);
-            console.log('token:', token);
-
             return Promise.resolve(token);
         } catch (error) {
             console.error('Erro no login:', error.response.data.error || 'Erro desconhecido');
