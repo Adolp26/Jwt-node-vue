@@ -68,9 +68,6 @@ exports.loginUser = async (req, res) => {
 
     // Comparar Senhas
     const isPasswordMatch = await bcrypt.compare(password, user.password);
-    console.log('Senha fornecida:', password);
-    console.log('Senha do banco:', user.password);
-    console.log(isPasswordMatch);
 
     if (!isPasswordMatch) {
       return res.status(401).json({ error: "Senha incorreta. Tente novamente." });
@@ -78,7 +75,7 @@ exports.loginUser = async (req, res) => {
 
     // Gerar Token
     const token = await user.generateAuthToken();
-    console.log('Token gerado:', token);
+
 
     // Salvar usuário no banco de dados
     await user.save();
@@ -98,8 +95,6 @@ exports.loginUser = async (req, res) => {
 
 exports.logoutUser = async (req, res) => {
   try {
-    console.log('Antes de remover o token:', req.user.tokens);
-
     // Remove o token atual da lista de tokens do usuário
     const tokenToRemove = req.token;
     const userTokens = req.user.tokens;
@@ -109,7 +104,7 @@ exports.logoutUser = async (req, res) => {
     }
     req.user.tokens = req.user.tokens.filter((token) => token.token !== req.token);
 
-    console.log('Depois de remover o token:', req.user.tokens);
+
 
     // Salve as alterações no banco de dados
     await req.user.save();
@@ -119,7 +114,6 @@ exports.logoutUser = async (req, res) => {
       return res.status(500).json({ error: 'Erro ao salvar as alterações do usuário.' });
     }
 
-    console.log('Usuário salvo após o logout:', req.user);
 
     return res.status(200).json({ message: 'Logout realizado com sucesso.' });
   } catch (error) {

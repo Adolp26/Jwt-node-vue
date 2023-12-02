@@ -53,10 +53,6 @@ userSchema.statics.findByCredentials = async function (email, password) {
   if (!user) {
     throw new Error("Usuário não encontrado!");
   }
-
-  console.log('Senha fornecida:', password);
-  console.log('Senha do banco:', user.password);
-
   const isPasswordMatch = await bcrypt.compare(password, user.password);
 
   if (!isPasswordMatch) {
