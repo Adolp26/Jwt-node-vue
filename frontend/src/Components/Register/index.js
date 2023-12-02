@@ -37,7 +37,6 @@ function Register() {
             if (response.error) {
                 setError(response.error);
             } else {
-                console.log('Registro realizado com sucesso!');
                 navigate('/login');
             }
         } catch (error) {
@@ -51,6 +50,11 @@ function Register() {
         }
     };
 
+    // Manipulador de eventos para limpar a mensagem de erro ao começar a digitar
+    const handleInputChange = () => {
+        setError(null);
+    };
+
     return (
         <div className={styles['position-container']}>
             <div className={styles['register-container']}>
@@ -62,7 +66,10 @@ function Register() {
                         <input
                             type="text"
                             value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            onChange={(e) => {
+                                setName(e.target.value);
+                                handleInputChange(); // Limpar a mensagem de erro
+                            }}
                             className={styles['register-input']}
                         />
                     </label>
@@ -71,7 +78,10 @@ function Register() {
                         <input
                             type="email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => {
+                                setEmail(e.target.value);
+                                handleInputChange(); // Limpar a mensagem de erro
+                            }}
                             className={styles['register-input']}
                         />
                     </label>
@@ -80,7 +90,10 @@ function Register() {
                         <input
                             type="password"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                                handleInputChange(); // Limpar a mensagem de erro
+                            }}
                             className={styles['register-input']}
                         />
                     </label>
@@ -89,7 +102,7 @@ function Register() {
                     </button>
                 </form>
                 <button onClick={() => navigate('/login')} className={styles['register-login-button']}>
-                    Já é cadastrado? clique aqui
+                    Já é cadastrado? Clique aqui
                 </button>
             </div>
         </div>

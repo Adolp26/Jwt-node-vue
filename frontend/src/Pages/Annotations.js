@@ -86,14 +86,32 @@ function App() {
   }
 
   async function handleChangePriority(id) {
-    await updatePriority(id);
-
-    if (notes && selectedValue !== 'all') {
+    try {
       await updatePriority(id);
-      loadNotes(selectedValue);
-    } else if (notes) {
-      getAllAnnotations();
-      console.log('Erro ao atualizar a prioridade:');
+
+      // Atualize a lista de anotações no estado
+      const updatedNotes = allNotes.map(note => {
+        if (note._id === id) {
+          // Esta é a anotação que acabamos de atualizar. Precisamos retornar uma nova versão com a prioridade atualizada.
+          return {
+            ...note,
+            priority: !note.priority // Isso pressupõe que a prioridade é um valor booleano. Atualize de acordo com sua lógica.
+          };
+        } else {
+          // Esta anotação não foi atualizada, então podemos retornar a versão original.
+          return note;
+        }
+      });
+
+      setAllNotes(updatedNotes);
+
+      if (notes && selectedValue !== 'all') {
+        loadNotes(selectedValue);
+      } else if (notes) {
+        getAllAnnotations();
+      }
+    } catch (error) {
+      console.error('Erro ao mudar a prioridade:', error);
     }
   }
 
