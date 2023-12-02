@@ -122,6 +122,7 @@ function App() {
       await AuthService.logout();
       sessionStorage.clear(); // Limpar completamente o sessionStorage
       navigate('/login'); // Redirecionar para a página de login após o logout
+      window.location.reload(); // 
     } catch (error) {
       console.error('Erro durante o logout:', error);
     }
